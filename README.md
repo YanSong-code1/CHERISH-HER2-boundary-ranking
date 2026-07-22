@@ -1,5 +1,3 @@
-# CHERISH Core Model
-
 This repository contains the core PyTorch implementation of CHERISH, a
 hierarchical multiple instance learning model for structured HER2 assessment
 from precomputed whole slide image tile features. It includes the model
@@ -10,6 +8,11 @@ The release is intentionally limited to the methodological core. Whole slide
 preprocessing, CONCH feature extraction, training orchestration, clinical
 manifests, model comparison pipelines and downstream spatial analyses are not
 included.
+
+## Requirements
+
+- Python 3.10 or later
+- PyTorch 2.1 or later
 
 ## Clinical states
 
@@ -22,6 +25,12 @@ CHERISH represents four modelled HER2 states:
 
 The model learns these states through three related supervision tasks. The
 task labels below follow the definitions used in the manuscript.
+
+| Task | Manuscript component | Prediction target | Main code output |
+| --- | --- | --- | --- |
+| A | Polarity anchor | IHC 0/1+ and IHC 2+/FISH negative versus IHC 2+/FISH amplified and IHC 3+ | `task_a_logit` |
+| B | Positive boundary module | IHC 2+/FISH amplified versus IHC 3+ within the positive branch | `task_b_logit` |
+| C | Primary state head | IHC 2+/FISH negative, IHC 2+/FISH amplified and IHC 3+ | `task_c_logit` |
 
 ## Task A: polarity anchor
 
@@ -97,6 +106,16 @@ conditional probability within the positive branch. The implementation can
 apply this constraint to the clinical pathway base distribution, the final
 three-state distribution, or both.
 
+For a Task C distribution ordered as `[FISH negative, FISH amplified,
+IHC 3+]`, these relations are
+
+```text
+P(Task A positive) = P(FISH amplified) + P(IHC 3+)
+
+P(Task B positive) = P(FISH amplified)
+                      / (P(FISH amplified) + P(IHC 3+) + eps).
+```
+
 ## Probability-conserving four-state readout
 
 Let `a` denote the pathway-entry probability used at inference and let
@@ -118,6 +137,9 @@ c2 / (c1 + c2 + eps).
 ## Repository contents
 
 ```text
+CHERISH_core/
+|-- README.md
+`-- cherish/
     |-- __init__.py
     |-- model.py
     |-- losses.py
