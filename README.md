@@ -118,9 +118,6 @@ c2 / (c1 + c2 + eps).
 ## Repository contents
 
 ```text
-CHERISH_core/
-|-- README.md
-`-- cherish/
     |-- __init__.py
     |-- model.py
     |-- losses.py
